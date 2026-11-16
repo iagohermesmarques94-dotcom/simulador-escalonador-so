@@ -4,13 +4,13 @@ Projeto desenvolvido para a disciplina de Sistemas Operacionais, com o objetivo 
 
 Grupo:
 
-Aluno
+Aluno: IAGO HERMES MARQUES
 
-Aluno
+Aluno: KAUA DA SILVA SCHIMIT
 
-Aluno
+Aluno: MURILO BORN ROOS
 
-Aluno
+Aluno: PEDRO HENRIQUE ROHDE MARQUES
 
 Linguagem: Java
 
