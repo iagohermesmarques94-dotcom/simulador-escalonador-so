@@ -26,64 +26,46 @@ A fila de prioridade alta tem preferência sobre a fila de prioridade baixa. Cad
 
 2. Configurações
 
-Configuração
+Quantum: 3 unidades de tempo
 
-Valor
+Número de processos: 5
 
-Quantum
+Tempo mínimo de CPU: 5
 
-3 unidades de tempo
+Tempo máximo de CPU: 5
 
-Número de processos
+Tempo máximo de chegada: 0
 
-5
+I/O do disco: 2 unidades
 
-Tempo mínimo de CPU
+I/O da fita: 3 unidades
 
-5
+I/O da impressora: 4 unidades
 
-Tempo máximo de CPU
-
-5
-
-Tempo máximo de chegada
-
-0
-
-I/O do disco
-
-2 unidades
-
-I/O da fita
-
-3 unidades
-
-I/O da impressora
-
-4 unidades
-
-Semente aleatória
-
-40
+Semente aleatória: 40
 
 Os processos são criados automaticamente, recebendo um PID, tempo de CPU, prioridade inicial alta, dispositivo de I/O e momento para solicitar I/O. A semente aleatória permite repetir os resultados com as mesmas configurações.
 
 3. Como executar
 
 Java: é necessário ter o Java instalado. Na pasta principal do projeto, execute:
-
-javac -d out simuladorescalonador1/Main.java
-java -cp out simuladorescalonador1.Main
+ --
+ --
+ --
 
 Docker: é necessário ter o Docker instalado e em funcionamento. Na pasta principal do projeto, execute:
 
-Criar a imagem:
-
-docker build -t simulador-escalonador .
+---
+---
+---
+---
 
 Executar o simulador:
 
-docker run --rm simulador-escalonador
+---
+---
+---
+---
 
 O Docker prepara o ambiente Java necessário para executar o programa, sem precisar instalar o Java diretamente no computador.
 
@@ -93,8 +75,9 @@ Durante a simulação, são apresentados eventos como criação de processos, ut
 
 Exemplo de saída:
 
-[t=003] Processo 1 executando
-[t=006] Processo 1 perdeu o quantum
+---
+---
+---
 
 Ao final, o programa apresenta um resumo com:
 
@@ -116,9 +99,9 @@ O simulador utiliza regras simplificadas de escalonamento. A quantidade de proce
 
 6. Tecnologias utilizadas
 
-Java
+- Java
 
-Docker
+- Docker
 
 7. Objetivo
 
