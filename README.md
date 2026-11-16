@@ -1,3 +1,5 @@
+---------Simulador de Escalonamento de Processos---------
+
 Projeto desenvolvido para a disciplina de Sistemas Operacionais, com o objetivo de simular o escalonamento de processos utilizando o algoritmo Round Robin com Feedback, filas de prioridades e operações de I/O.
 
 Grupo:
