@@ -1,110 +1,127 @@
----------Simulador de Escalonamento de Processos---------
+# Simulador de Escalonamento de Processos — Round Robin com Feedback
 
-Projeto desenvolvido para a disciplina de Sistemas Operacionais, com o objetivo de simular o escalonamento de processos utilizando o algoritmo Round Robin com Feedback, filas de prioridades e operações de I/O.
+Simulador desenvolvido em **Java** para a disciplina de **Sistemas Operacionais**, projetado para reproduzir o comportamento do núcleo (kernel) de um sistema operacional no gerenciamento de processos, alternância de contexto, filas de múltiplas prioridades e tratamento de interrupções de Entrada e Saída (E/S).
 
-Grupo:
+O projeto foi construído sem o uso de bibliotecas externas ou orientação a objetos tradicional, utilizando **vetores paralelos (PCB)** e **filas circulares estáticas** para demonstrar o controle de processos” e algoritmos de baixo nível.
 
-Aluno: IAGO HERMES MARQUES
+## Equipe
 
-Aluno: KAUA DA SILVA SCHIMIT
+* **Iago Hermes Marques** — Núcleo do escalonador e preempção (Parte B)
+* **Kaua da Silva Schimit** — Estruturas de dados e filas circulares (Parte A)
+* **Murilo Born Roos** — Gerenciamento de E/S e métricas (Parte C)
+* **Pedro Henrique Rohde Marques** — Infraestrutura Docker e documentação
+  
+  ---
 
-Aluno: MURILO BORN ROOS
+## Como o Programa Funciona (Baseado na Execução)
 
-Aluno: PEDRO HENRIQUE ROHDE MARQUES
+A simulação gerencia o ciclo de vida completo de **5 processos (`P1` a `P5`)** desde a criação até a finalização, controlando um relógio lógico discreto (`t=000` até `t=025`):
 
-Linguagem: Java
-
-1. Funcionamento
-
-O simulador cria processos e controla sua execução por meio de três filas:
-
-Prioridade alta: recebe novos processos e processos que retornam de determinadas operações de I/O.
-
-Prioridade baixa: recebe processos que utilizam todo o quantum e processos que retornam de determinadas operações de I/O.
-
-I/O: mantém os processos bloqueados enquanto aguardam uma operação.
-
-A fila de prioridade alta tem preferência sobre a fila de prioridade baixa. Cada processo utiliza a CPU durante um tempo limitado pelo quantum. Caso não finalize nesse período, pode ser enviado para uma fila de prioridade inferior.
-
-2. Configurações
-
-Quantum: 3 unidades de tempo
-
-Número de processos: 5
-
-Tempo mínimo de CPU: 5
-
-Tempo máximo de CPU: 5
-
-Tempo máximo de chegada: 0
-
-I/O do disco: 2 unidades
-
-I/O da fita: 3 unidades
-
-I/O da impressora: 4 unidades
-
-Semente aleatória: 40
-
-Os processos são criados automaticamente, recebendo um PID, tempo de CPU, prioridade inicial alta, dispositivo de I/O e momento para solicitar I/O. A semente aleatória permite repetir os resultados com as mesmas configurações.
-
-3. Como executar
-
-Java: é necessário ter o Java instalado. Na pasta principal do projeto, execute:
- --
- --
- --
-
-Docker: é necessário ter o Docker instalado e em funcionamento. Na pasta principal do projeto, execute:
-
----
----
----
+1. **Criação e Fila de Alta Prioridade:** Todos os processos são inicializados em `t=000` na fila `ALTA`, que possui preferência absoluta de execução sobre a fila `BAIXA`.
+2. **Fatia de Tempo (Quantum = 3):** Cada processo ocupa a CPU por no máximo 3 unidades de tempo por vez. Caso utilize todo o quantum sem finalizar ou pedir E/S (como ocorreu com `P5` em `t=017` e `P1` em `t=020`), sofre **preempção** e é rebaixado para a fila `BAIXA`.
+3. **Bloqueio e Retorno de E/S (I/O):** Antes de concluir sua carga de CPU, cada processo solicita uma operação de E/S em rodízio entre três dispositivos, liberando a CPU imediatamente:
+   * **Disco (2 unidades):** Ao concluir, o processo retorna para a **fila `BAIXA`** (`P1` e `P4`), simulando dispositivos que exigem menor prioridade imediata.
+   * **Fita Magnética (3 unidades):** Ao concluir, o processo retorna para a **fila `ALTA`** (`P2` e `P5`).
+   * **Impressora (4 unidades):** Ao concluir, o processo retorna para a **fila `ALTA`** (`P3`).
+4. **Métricas de Desempenho:** Ao encerrar todos os processos em `t=025`, o sistema consolida os indicadores de eficiência do escalonador:
+   * **Preempções:** 2 trocas de contexto forçadas por fim de quantum.
+   * **Operações de E/S:** 5 eventos atendidos (2 de disco, 2 de fita e 1 de impressora).
+   * **Tempo Médio de Espera:** `11.60` unidades de tempo na fila de prontos.
+   * **Tempo Médio de Retorno (Turnaround):** `19.40` unidades de tempo entre a chegada e a conclusão.
+   * **Ociosidade da CPU:** `0.00%` (aproveitamento integral do processador durante os 25 ciclos).
 ---
 
-Executar o simulador:
+## Configurações e Premissas
+
+Os parâmetros abaixo são definidos como constantes no código-fonte e utilizam uma semente fixa (`SEMENTE = 40`) para garantir que os testes possam ser reproduzidos com os mesmos resultados:
+
+| Parâmetro | Valor | Descrição |
+| :--- | :---: | :--- |
+| **Quantum** | `3` | Fatia máxima contínua de CPU por turno |
+| **Número de Processos** | `5` | Quantidade total de processos simulados (`P1` a `P5`) |
+| **Criação dos Processos** | `t=000` | Todos os processos são criados no início da simulação e entram na fila `ALTA` |
+| **Tempo Mínimo de CPU** | `5` | Carga mínima de processamento por processo |
+| **Tempo Máximo de CPU** | `5` | Carga máxima de processamento por processo |
+| **Tempo Máximo de Chegada** | `0` | Instante de chegada (`0` = todos chegam em `t=000`) |
+| **I/O do Disco** | `2` | Duração da operação de disco (retorno para fila `BAIXA`) |
+| **I/O da Fita** | `3` | Duração da operação de fita magnética (retorno para fila `ALTA`) |
+| **I/O da Impressora** | `4` | Duração da operação de impressora (retorno para fila `ALTA`) |
+| **Semente Aleatória** | `40` | Garante determinismo na geração dos eventos |
+| **Fim da Simulação** | `FINALIZADO` | A simulação termina quando todos os processos estão no estado `FINALIZADO` |
 
 ---
----
----
----
 
-O Docker prepara o ambiente Java necessário para executar o programa, sem precisar instalar o Java diretamente no computador.
-
-4. Resultado da execução
-
-Durante a simulação, são apresentados eventos como criação de processos, utilização da CPU, mudanças de prioridade, bloqueios e retornos de I/O e finalização dos processos.
-
-Exemplo de saída:
-
----
----
+## Estrutura do Repositório
+```text
+simulador-escalonador-so/
+├── src/
+│   ├── .gitkeep        # Mantém a estrutura do diretório no Git
+│   └── Main.java       # Código-fonte completo do simulador (Partes A, B e C)
+├── .dockerignore       # Arquivos ignorados na construção da imagem Docker
+├── .gitignore          # Arquivos ignorados pelo controle de versão Git
+├── Dockerfile          # Configuração para compilação e execução em container
+└── LEIA-ME.md          # Documentação técnica, premissas e instruções
+```
 ---
 
-Ao final, o programa apresenta um resumo com:
+## Como Executar
 
-Quantidade de processos finalizados;
+### Opção 1: Via Docker (Recomendado)
+É necessário ter o **Docker** instalado e em funcionamento. O container prepara todo o ambiente Java automaticamente, sem precisar instalar o JDK no computador. Na pasta principal do projeto, execute:
 
-Tempo total da simulação;
+```bash
+docker build -t simulador-escalonador-so .
+docker run --rm simulador-escalonador-so
+```
 
-Número de preempções;
+### Opção 2: Via Java (Local)
+É necessário ter o **Java (JDK)** instalado. Na pasta principal do projeto, execute:
 
-Quantidade de operações de I/O;
+```bash
+javac src/Main.java
+java -cp src Main
+```
 
-Tempo médio de espera e de retorno;
+---
 
-Percentual de tempo em que a CPU ficou ociosa.
+## Resultado da Execução
 
-5. Limitações
+Durante a simulação, o terminal exibe cronologicamente a criação dos processos, o uso da CPU, as preempções por quantum, os bloqueios e retornos de I/O e as finalizações.
 
-O simulador utiliza regras simplificadas de escalonamento. A quantidade de processos e os tempos podem ser alterados diretamente no código. A semente aleatória é fixa para facilitar a repetição dos testes.
+### Exemplo de Saída
 
-6. Tecnologias utilizadas
+<img width="1101" height="908" alt="image" src="https://github.com/user-attachments/assets/92aaccd8-d1e5-423a-b783-63d4192cf7aa" />
 
-- Java
+Ao final da execução, o programa apresenta um resumo consolidado contendo:
 
-- Docker
+* Quantidade de processos finalizados e tempo total da simulação;
+* Número total de preempções por fim de quantum;
+* Quantidade de operações de I/O realizadas por dispositivo;
+* Tempo médio de espera e tempo médio de retorno (*turnaround*);
+* Percentual de tempo em que a CPU permaneceu ociosa.
+---
 
-7. Objetivo
+## Limitações e Escopo
 
-Demonstrar, de forma prática, o funcionamento do escalonamento de processos em um sistema operacional, utilizando filas de prioridades, divisão do tempo de CPU e operações de I/O.
+* O simulador utiliza regras simplificadas de escalonamento para fins didáticos, sem simulação de memória virtual ou múltiplos núcleos de processamento.
+* Cada processo realiza **um único I/O** durante a sua execução, em um dispositivo atribuído em rodízio (disco, fita e impressora).
+* Todos os dispositivos compartilham **uma única fila de I/O**; não há fila separada por dispositivo.
+* Existem apenas duas prioridades (`ALTA` e `BAIXA`). Um processo em execução **não é interrompido** quando outro entra na fila `ALTA`; ele só deixa a CPU ao fim do quantum, ao pedir I/O ou ao finalizar.
+* Com as premissas atuais (todos com 5 unidades de CPU e chegada em `t=000`), a CPU nunca fica ociosa. O tratamento de CPU ociosa existe no código, mas não aparece nesta execução.
+* O `PPID` de todos os processos é `0` (criados pelo "sistema").
+* A quantidade de processos e os tempos podem ser ajustados nas constantes de `src/Main.java`. O tempo mínimo de CPU (`CPU_MIN`) deve ser **maior ou igual a 2**, pois cada processo precisa executar ao menos uma unidade antes de pedir I/O.
+* A semente aleatória é fixa por padrão para facilitar a validação e a reprodução dos cenários de teste.
+
+---
+
+## Tecnologias Utilizadas
+
+* **Java (JDK):** Implementação da lógica do escalonador, vetores paralelos (PCB) e filas circulares.
+* **Docker:** Containerização e padronização do ambiente de execução.
+* **Git & GitHub:** Controle de versão e colaboração entre os integrantes da equipe.
+
+---
+
+## Objetivo
+
+Demonstrar, na prática, o funcionamento do escalonamento de processos em um sistema operacional utilizando filas de múltiplas prioridades, divisão de tempo de CPU por quantum e tratamento de interrupções de E/S.
