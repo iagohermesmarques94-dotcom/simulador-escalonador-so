@@ -59,7 +59,7 @@ simulador-escalonador-so/
 ├── .dockerignore       # Arquivos ignorados na construção da imagem Docker
 ├── .gitignore          # Arquivos ignorados pelo controle de versão Git
 ├── Dockerfile          # Configuração para compilação e execução em container
-└── LEIA-ME.md          # Documentação técnica, premissas e instruções
+└── README.md          # Documentação técnica, premissas e instruções
 ```
 ---
 
