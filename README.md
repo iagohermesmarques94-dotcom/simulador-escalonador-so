@@ -55,7 +55,6 @@ Os parâmetros abaixo são definidos como constantes no código-fonte e utilizam
 ```text
 simulador-escalonador-so/
 ├── src/
-│   ├── .gitkeep        # Mantém a estrutura do diretório no Git
 │   └── Main.java       # Código-fonte completo do simulador (Partes A, B e C)
 ├── .dockerignore       # Arquivos ignorados na construção da imagem Docker
 ├── .gitignore          # Arquivos ignorados pelo controle de versão Git
